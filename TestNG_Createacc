@@ -1,0 +1,68 @@
+package testNG_Execution;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class CreateAccount extends BaseClass {
+
+	@Test
+	public void CreateAcc() throws InterruptedException {
+		Random rand = new Random();
+		int rand_int1 = rand.nextInt(1000);
+		
+		//WebDriverWait wait = new WebDriverWait(driver, 30);
+		//WebElement plusicon =	driver.findElementByXPath("//*[@class='slds-icon slds-icon_x-small']");
+		//wait.until(ExpectedConditions.elementToBeClickable(plusicon));
+		//plusicon.click();
+		
+		Thread.sleep(5000);
+		driver.findElementByXPath("//*[@class='slds-icon slds-icon_x-small']").click();
+	
+
+		// clicking the new contact
+		driver.findElementByXPath("//span[text()='New Contact']").click();
+
+		// Filling the details
+		driver.findElementByXPath("//*[text()='Salutation']//following::div[4]/a").click();
+		// driver.findElementByXPath("//a[@class='select'][@data-interactive-lib-uid='8']").click();
+		driver.findElementByXPath("//a[@title='Mr.']").click();
+		driver.findElementByXPath("//input[@class='firstName compoundBorderBottom form-element__row input']")
+				.sendKeys("Anil");
+		driver.findElementByXPath(
+				"//input[@class='lastName compoundBLRadius compoundBRRadius form-element__row input']")
+				.sendKeys("Elumalai" + rand_int1);
+		driver.findElementByXPath("//input[@inputmode='email']").sendKeys("naveen@test.com");
+
+		// Creating the Account
+		driver.findElementByXPath("//input[@title='Search Accounts']").click();
+		Thread.sleep(1000);
+		driver.findElementByXPath("//span[@title='New Account']").click();
+
+		// Giving the Details in account, it is identifying as same window
+		driver.findElementByXPath("(//input[@class=\" input\"][@type='text'])[3]").sendKeys("Credits");
+		driver.findElementByXPath("(//button[@type='button'][@title='Save'])[2]").click();
+		Thread.sleep(1000);
+		driver.findElementByXPath("(//span[text()='Save'])[2]").click();
+
+		// checking the account creation successful or not
+		Boolean ElemenetDisplay = driver.findElementByXPath("//div[@data-key='success'][@role='alert']").isDisplayed();
+		if (ElemenetDisplay) {
+			System.out.println("The testcase passed & Contact successfully created");
+		} else {
+			System.out.println("The testcase failed & unsuccesful New contact creation");
+
+		}
+	}
+
+}
