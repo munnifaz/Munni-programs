@@ -1,0 +1,221 @@
+package salesForce;
+
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class DashboardTestcase {
+	public static void main(String[] args) throws InterruptedException {
+
+		// disable chrome notifications
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--disable-notifications");
+		WebDriverManager.chromedriver().setup();
+		ChromeDriver driver = new ChromeDriver(options);
+		driver.get("https://login.salesforce.com");
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		int goalamt = 10000;
+		Random rand = new Random();
+		int rand_int1 = rand.nextInt(1000);
+		Boolean flag = false;
+
+		// login to application
+		driver.findElement(By.xpath("//input[@id='username']")).sendKeys("cypress@testleaf.com");
+		driver.findElement(By.xpath("//input[@id='password']")).sendKeys("Selbootcamp@123");
+		driver.findElement(By.xpath("//input[@type='submit']")).click();
+		Thread.sleep(10000);
+
+		// clicking viewall and service console
+		driver.findElement(By.xpath("//div[@class='slds-icon-waffle']")).click();
+		WebDriverWait wait = new WebDriverWait(driver, 30);
+		WebElement ViewAllbutton = driver.findElement(By.xpath("(//button[text()='View All'])[2]"));
+		wait.until(ExpectedConditions.elementToBeClickable(ViewAllbutton));
+		ViewAllbutton.click();
+		driver.findElementByXPath("//input[@class='slds-input']").sendKeys("Service Console");
+		driver.findElementByXPath("//mark[text()='Service Console']").click();
+		Thread.sleep(5000);
+
+		// clicking home in dashboard
+
+		WebElement SmallIconDashBrd = driver
+				.findElementByXPath("//button[@title='Show Navigation Menu']/lightning-primitive-icon");
+		jse.executeScript("arguments[0].click();", SmallIconDashBrd);
+		Thread.sleep(5000);
+		WebElement Homebtn = driver.findElementByXPath("//span[text()='Home']");
+		jse.executeScript("arguments[0].click();", Homebtn);
+		Thread.sleep(3000);
+
+		// Adding closed and open values and set goal to 10000
+
+		String closedval = driver.findElementByXPath("(//span[text()='Closed']/following-sibling::span)[1]").getText();
+		String exactclosedval = closedval.replaceAll("\\D", "");
+		// System.out.println(exactclosedval);
+
+		String Openvalue = driver.findElementByXPath("//span[contains(text(),'Open')]/following-sibling::span")
+				.getText();
+		String exactopenval = Openvalue.replaceAll("\\D", "");
+		// System.out.println(exactopenval);
+
+		int closed = Integer.parseInt(exactclosedval);
+		int open = Integer.parseInt(exactopenval);
+
+		int Goal = closed + open;
+		// System.out.println("closed and open value is" + Goal + "");
+		if (Goal < goalamt) {
+
+			WebElement Goalvar = driver
+					.findElementByXPath("//button[@data-aura-class='homeGoalSetting']/lightning-primitive-icon");
+			jse.executeScript("arguments[0].click();", Goalvar);
+			Thread.sleep(3000);
+			driver.findElementByXPath("//input[@aria-describedby='currencyCode']").clear();
+			driver.findElementByXPath("//input[@aria-describedby='currencyCode']").sendKeys("10000");
+			driver.findElementByXPath("//span[text()='Save']").click();
+		} else {
+			String s = String.valueOf(Goal);
+			// System.out.println("The goal amount is greater than 10000");
+			driver.findElementByXPath("//input[@aria-describedby='currencyCode']").sendKeys(s);
+		}
+
+		// click to Dashboards in home
+		WebElement SmallIconDashBrd1 = driver
+				.findElementByXPath("//button[@title='Show Navigation Menu']/lightning-primitive-icon");
+		jse.executeScript("arguments[0].click();", SmallIconDashBrd1);
+		Thread.sleep(3000);
+		driver.findElementByXPath("//span[text()='Dashboards']").click();
+
+		// click new Dashboard and giving details
+		driver.findElementByXPath("//div[text()='New Dashboard']").click();
+		Thread.sleep(3000);
+
+		// WebElement Frame1 =
+		// driver.findElementByXPath("//iframe[@title='dashboard']");
+		// driver.switchTo().frame(0);
+		int sizeofframe = driver.findElementsByTagName("iframe").size();
+		// System.out.println(sizeofframe);
+
+		driver.switchTo().frame(sizeofframe - 1);
+		driver.findElementById("dashboardNameInput").sendKeys("Munni_workout" + rand_int1);
+		String DashboardName = driver.findElementById("dashboardNameInput").getText();
+		driver.findElementById("dashboardDescriptionInput").sendKeys("Testing");
+		driver.findElementByXPath("//button[@id='submitBtn']").click();
+
+		Thread.sleep(10000);
+		int sizeofframe1 = driver.findElementsByTagName("iframe").size();
+		// System.out.println(sizeofframe1);
+
+		driver.switchTo().frame(sizeofframe1 - 1);
+		WebElement DoneButton = driver.findElementByXPath("//button[text()='Done']");
+		DoneButton.click();
+
+		// clicking subscribe and filling details
+		Thread.sleep(3000);
+		driver.findElementByXPath("//button[text()='Subscribe']").click();
+		// WebElement msg=driver.findElementByXPath("//h2[text()='All subscriptions
+		// used']");
+		// if(msg.isDisplayed()) {
+		// driver.findElementByXPath("//button[@title='OK']").click();}
+		// else {
+
+		Thread.sleep(5000);
+		driver.switchTo().defaultContent();
+		WebDriverWait waitdaily = new WebDriverWait(driver, 30);
+		WebElement Daily = driver.findElementByXPath("//span[text()='Daily']");
+		waitdaily.until(ExpectedConditions.elementToBeClickable(Daily));
+		Daily.click();
+		// WebElement daily=driver.findElementByXPath("//span[text()='Daily']");
+		// jse.executeScript("arguments[0].click();", daily);
+
+		WebElement time = driver.findElementByXPath("//select[@id='time']");
+		Select TimeSelect = new Select(time);
+		TimeSelect.selectByVisibleText("10:00 AM");
+		driver.findElementByXPath("//Button[@title='Save']").click();
+		Thread.sleep(3000);
+		WebElement Message = driver
+				.findElementByXPath("//span[@class='toastMessage slds-text-heading--small forceActionsText']");
+		if (Message.isDisplayed()) {
+			System.out.println("Successfully created Dashboard");
+		} else {
+			System.out.println("Dashboard not created");
+		}
+
+		// clicking privatedashboard and finding my dashboard and try to delete
+		Thread.sleep(5000);
+		driver.findElementByXPath("//button[contains(@title,'Close Munni')]").click();
+		driver.findElementByXPath("//a[@title='Dashboards']/span").click();
+		driver.findElementByXPath("(//a[@title='Private Dashboards'])[1]").click();
+		driver.findElementByXPath("//input[@placeholder='Search private dashboards...']")
+				.sendKeys("Munni_workout" + rand_int1);
+
+		Thread.sleep(5000);
+		List<WebElement> duplicateelements = driver.findElementsByXPath("//tbody/tr/th");
+		int size1 = duplicateelements.size();
+		// System.out.println(size1);
+		// System.out.println(duplicateelements.get(0).getText());
+		Thread.sleep(3000);
+
+		for (int i = 0; i <= size1; i++) {
+			if (duplicateelements.get(i).getText().equals("Munni_workout" + rand_int1)) {
+				System.out.println("The uniquename found in" + " " + (i + 1) + " " + "th row & the name is" + " "
+						+ duplicateelements.get(i).getText());
+				flag = true;
+
+				WebElement mt = driver.findElementByXPath(
+						"(//button[@class='slds-button slds-button_icon-border slds-button_icon-x-small'])[1]");
+				((JavascriptExecutor) driver).executeScript("arguments[0].scrollLeft = arguments[0].offsetWidth", mt);
+				Thread.sleep(2000);
+				WebElement icon = driver.findElementByXPath(
+						"(//button[@class='slds-button slds-button_icon-border slds-button_icon-x-small'])[1]");
+				JavascriptExecutor jcutor = (JavascriptExecutor) driver;
+				jcutor.executeScript("arguments[0].click()", icon);
+
+				driver.findElementByXPath("//table/tbody/tr[" + (i + 1) + "]/td[6]//div").click();
+				Thread.sleep(3000);
+				WebElement deleteele = driver.findElementByXPath("//span[text()='Delete']");
+				jcutor.executeScript("arguments[0].click()", deleteele);
+				Thread.sleep(2000);
+				WebElement deletebtn = driver.findElementByXPath("//button[@title='Delete']");
+				jcutor.executeScript("arguments[0].click()", deletebtn);
+			} else {
+				System.out.println("The Dashboard name not found");
+			}
+
+			if (flag = true) {
+				break;
+
+			}
+		}
+
+		WebElement Delmsg = driver
+				.findElementByXPath("//span[@class='toastMessage slds-text-heading--small forceActionsText']");
+		if (Delmsg.isDisplayed()) {
+			System.out.println("deleted dashboard message displaying");
+		} else {
+			System.out.println("deleted dashboard message is not displaying");
+		}
+
+		// verifying it is deleted or not driver.
+		driver.findElementByXPath("//input[@placeholder='Search private dashboards...']").clear();
+		driver.findElementByXPath("//input[@placeholder='Search private dashboards...']")
+				.sendKeys("Munni_workout" + rand_int1);
+		WebElement errmsg = driver.findElementByXPath("//span[text()='No results found']");
+		if (errmsg.isDisplayed()) {
+			System.out.println("The testcase passed & dashboard successfully deleted");
+		} else {
+			System.out.println("The testcase failed & dashboard not deleted successfully");
+		}
+	}
+
+}
